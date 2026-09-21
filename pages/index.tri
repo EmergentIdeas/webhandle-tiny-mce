@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	__externalResourceManager.render()__
+
+
+</head>
+
+<body>
+
+	__externalResourceManager::@webhandle/tiny-mce/renderExternalResources__
+	<div id="editor" style="height: 500px; border: solid 1px black;">
+
+	</div>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<textarea class="html-editor"></textarea>
+
+	<br>
+	<br>
+	<br>
+	<br>
+	<button id="convert">convert</button>
+	<div class="edit-content-inline" style="height: 500px; border: solid 1px black;">
+		<p>hello</p>
+
+	</div>
+	<script type="module">
+		// import "tinymce"
+		// tinymce.init({
+		// 	selector: '.html-editor'
+		// 	, base_url: '/@webhandle/tiny-mce/tinymce-files'
+		// 	, license_key: 'gpl' // gpl for open source, T8LK:... for commercial
+		// 	, plugins: 'code'
+		// });
+	</script>
+	<script type="module">
+		if (false) {
+
+			// import { convertEditContentInline } from "ckeditor4-edit-content-inline"
+			let id = 'editor'
+
+			let editorEl = document.querySelector('#' + id)
+			editorEl.setAttribute('contenteditable', 'true')
+			editorEl.classList.add('page-editor-editable')
+
+			let editorOptions = {
+				on: {
+					change: function (event) {
+						console.log('change')
+					},
+					blur: function (event) {
+						console.log('blur')
+					}
+				}
+				, customConfig: '/@webhandle/ckeditor-4/files/conf/std-config.js'
+			}
+			CKEDITOR.inline(id, editorOptions)
+
+			let convert = document.querySelector('#convert')
+			convert.addEventListener('click', (evt) => {
+				convertEditContentInline()
+			})
+		}
+
+		// id = 'teditor'
+		// editorEl = document.querySelector('#' + id)
+		// editorOptions = {
+		// 	on: {
+		// 		change: function(event) {
+		// 			// console.log(event)
+		// 			// console.log(event.editor.getData())
+		// 			document.querySelector('#' + id).value = event.editor.getData()
+		// 		},
+		// 		blur: function( event ) {
+		// 			console.log(event)
+		// 		}
+		// 	}
+		// 	, customConfig: '/@webhandle/ckeditor-4/files/conf/std-config.js'
+		// }
+		// CKEDITOR.replace(id, editorOptions) 
+	</script>
+
+	__::@webhandle/tiny-mce/convertTextAreas__
+
+
+
+
+	__externalResourceManager.render()__
+</body>
+
+
+</html>
