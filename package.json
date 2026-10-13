@@ -1,5 +1,5 @@
 {
-  "name": "tiny-mce",
+  "name": "@webhandle/tiny-mce",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -22,4 +22,10 @@
     "@webhandle/initialize-webhandle-component": "^1.0.6",
     "tinymce": "^8.8.2"
   }
+  , "files": [
+	"public/css"
+	, "public/js/tinymce.mjs"
+	, "initialize-webhandle-component.mjs"
+	, "README.md"
+  ]
 }

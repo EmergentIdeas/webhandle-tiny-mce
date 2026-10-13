@@ -19,6 +19,7 @@
 	<br>
 	<br>
 	<textarea class="html-editor"></textarea>
+	<textarea name="normal">normal text editor</textarea>
 
 	<br>
 	<br>
@@ -30,64 +31,19 @@
 
 	</div>
 	<script type="module">
-		// import "tinymce"
-		// tinymce.init({
-		// 	selector: '.html-editor'
-		// 	, base_url: '/@webhandle/tiny-mce/tinymce-files'
-		// 	, license_key: 'gpl' // gpl for open source, T8LK:... for commercial
-		// 	, plugins: 'code'
-		// });
+		import makeEditor from "@webhandle/tiny-mce"
+		makeEditor(document.querySelector('#editor'), "default", {
+			inline: true
+		})
+
+		let convert = document.querySelector('#convert')
+		convert.addEventListener('click', (evt) => {
+			makeEditor('.edit-content-inline')
+		})
 	</script>
-	<script type="module">
-		if (false) {
 
-			// import { convertEditContentInline } from "ckeditor4-edit-content-inline"
-			let id = 'editor'
-
-			let editorEl = document.querySelector('#' + id)
-			editorEl.setAttribute('contenteditable', 'true')
-			editorEl.classList.add('page-editor-editable')
-
-			let editorOptions = {
-				on: {
-					change: function (event) {
-						console.log('change')
-					},
-					blur: function (event) {
-						console.log('blur')
-					}
-				}
-				, customConfig: '/@webhandle/ckeditor-4/files/conf/std-config.js'
-			}
-			CKEDITOR.inline(id, editorOptions)
-
-			let convert = document.querySelector('#convert')
-			convert.addEventListener('click', (evt) => {
-				convertEditContentInline()
-			})
-		}
-
-		// id = 'teditor'
-		// editorEl = document.querySelector('#' + id)
-		// editorOptions = {
-		// 	on: {
-		// 		change: function(event) {
-		// 			// console.log(event)
-		// 			// console.log(event.editor.getData())
-		// 			document.querySelector('#' + id).value = event.editor.getData()
-		// 		},
-		// 		blur: function( event ) {
-		// 			console.log(event)
-		// 		}
-		// 	}
-		// 	, customConfig: '/@webhandle/ckeditor-4/files/conf/std-config.js'
-		// }
-		// CKEDITOR.replace(id, editorOptions) 
-	</script>
 
 	__::@webhandle/tiny-mce/convertTextAreas__
-
-
 
 
 	__externalResourceManager.render()__

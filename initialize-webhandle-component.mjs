@@ -9,6 +9,7 @@ initializeWebhandleComponent.componentDir = import.meta.dirname
 initializeWebhandleComponent.defaultConfig = {
 	"publicFilesPrefix": '/' + initializeWebhandleComponent.componentName + "/files"
 	, "alwaysProvideResources": false
+	, "tinyMCEFilesPrefix": "/@webhandle/tiny-mce/tinymce-files"
 }
 initializeWebhandleComponent.staticFilePath = 'public'
 initializeWebhandleComponent.templatePath = 'views'
@@ -17,6 +18,34 @@ initializeWebhandleComponent.templatePath = 'views'
 initializeWebhandleComponent.setup = async function (webhandle, config) {
 	let manager = new ComponentManager()
 	manager.config = config
+	config.editor = {
+		init: {
+			default: {
+				base_url: config.tinyMCEFilesPrefix
+				, license_key: 'gpl'
+				, plugins: 'code'
+				, toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent'
+				, external_plugins: {
+				}
+			}
+		}
+		, plugins: []
+	}
+
+	/**
+	 * @param {object} options - Options to add and use a tinymce editor plugin
+	 * @param {string} options.name - short name for the plugin
+	 * @param {string} options.url - how to find the plugin
+	 * @param {string} options.toolbar - how to find the plugin
+	 */
+	manager.addPlugin = function (options) {
+		config.editor.plugins.push(options)
+
+		if(options.toolbar) {
+			config.editor.init.default.toolbar += ` ${options.toolbar} `
+		}
+		config.editor.init.default.plugins += ` ${options.name} `
+	}
 
 	let base = webhandle.projectRoot
 	try {
@@ -26,17 +55,10 @@ initializeWebhandleComponent.setup = async function (webhandle, config) {
 		base = initializeWebhandleComponent.componentDir
 	}
 
-	// webhandle.routers.preDynamic.use((req, res, next) => {
-	// 	if(config.alwaysProvideResources || !initializeWebhandleComponent.supportsMultipleImportMaps(req)) {
-	// 		manager.addExternalResources(res.locals.externalResourceManager)
-	// 	}
-	// 	next()
-	// })
-
 	manager.addExternalResources = (externalResourceManager, options) => {
 		externalResourceManager.provideResource({
 			mimeType: 'application/javascript'
-			, url: '/@webhandle/tiny-mce/tinymce-files/tinymce.js'
+			, url: config.tinyMCEFilesPrefix + '/tinymce.js'
 			, name: 'tinymce'
 			, resourceType: 'module'
 		})
@@ -47,7 +69,14 @@ initializeWebhandleComponent.setup = async function (webhandle, config) {
 		})
 
 		externalResourceManager.provideResource({
-			url: config.publicFilesPrefix + '/js/functionality.mjs'
+			mimeType: 'application/javascript'
+			, resourceType: 'module'
+			, name: initializeWebhandleComponent.componentName + '/configuration'
+			, data: config.editor
+		})
+
+		externalResourceManager.provideResource({
+			url: path.join(config.publicFilesPrefix, 'js/tinymce.mjs')
 			, mimeType: 'application/javascript'
 			, resourceType: 'module'
 			, name: initializeWebhandleComponent.componentName
@@ -77,41 +106,18 @@ initializeWebhandleComponent.setup = async function (webhandle, config) {
 			}
 			let action = `
 	<script type="module">
-			import "tinymce"
-			tinymce.PluginManager.add('myplugin', (editor, url) => {
-				editor.addCommand('myCommand', () => {
-					editor.insertContent('&nbsp;<strong>Inserted content</strong>&nbsp;');
-				});
-
-				editor.ui.registry.addButton('mybutton', {
-					text: 'My Button',
-					onAction: () => editor.execCommand('myCommand')
-				});
-				editor.ui.registry.addMenuItem('example', {
-					text: 'Example plugin',
-					onAction: () => {
-						editor.execCommand('myCommand')
-					}
-				});
-
-				return {
-					getMetadata: () => ({
-					name: 'My plugin',
-					url: 'https://example.com/docs'
-					})
-				};
-			});
-			let abc = await tinymce.init({
-				selector: '${selector}'
-				, base_url: '/@webhandle/tiny-mce/tinymce-files'
-				, license_key: 'gpl' 
-				, plugins: 'code,myplugin'
-				, toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | mybutton'
-				// , toolbar: 'mybutton'
-			})
-				
-			console.log(abc)
-			
+		import makeEditor from "@webhandle/tiny-mce"
+		function updateTextareaFromEditor(editor) {
+			let value = editor.getContent()
+			editor.getElement().value = value
+		}
+		makeEditor('${selector}', "default", {
+			setup: (editor) => {
+				editor.on('change input NodeChange ExecCommand blur', () => {
+					updateTextareaFromEditor(editor)
+				})
+			}
+		})
 	</script>`
 
 			return resources + action
@@ -125,7 +131,7 @@ initializeWebhandleComponent.setup = async function (webhandle, config) {
 		webhandle.addStaticDir(
 			path.join(base, 'node_modules/tinymce')
 			, {
-				urlPrefix: '/@webhandle/tiny-mce/tinymce-files'
+				urlPrefix: config.tinyMCEFilesPrefix
 				, fixedSetOfFiles: true
 			})
 	)
@@ -143,12 +149,12 @@ initializeWebhandleComponent.setup = async function (webhandle, config) {
 		)
 	)
 
-	webhandle.addTemplateDir(
-		path.join(initializeWebhandleComponent.componentDir, initializeWebhandleComponent.templatePath)
-		, {
-			immutable: true
-		}
-	)
+	// webhandle.addTemplateDir(
+	// 	path.join(initializeWebhandleComponent.componentDir, initializeWebhandleComponent.templatePath)
+	// 	, {
+	// 		immutable: true
+	// 	}
+	// )
 
 	return manager
 }

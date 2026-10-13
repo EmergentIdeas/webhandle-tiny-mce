@@ -1,8 +1,11 @@
-import setupCKEditor from "./initialize-webhandle-component.mjs";
+import setupTinyMCEEditor from "./initialize-webhandle-component.mjs";
+import setupTestPlugin from "./test/add-my-plugin.mjs"
+
 export default async function test(webhandle) {
 	webhandle.development = true
+	debugger
 
-	let ckManager = await setupCKEditor(webhandle)
+	let tinymceManager = await setupTinyMCEEditor(webhandle)
 
 	webhandle.routers.preStatic.use((req, res, next) => {
 		req.user = {
@@ -12,8 +15,5 @@ export default async function test(webhandle) {
 		
 		next()
 	})
-	// webhandle.routers.primary.use((req, res, next) => {
-	// 	ckManager.addExternalResources(res.locals.externalResourceManager)
-	// 	next()
-	// })
+	await setupTestPlugin(webhandle)
 }
