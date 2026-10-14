@@ -1,8 +1,8 @@
 {
   "name": "@webhandle/tiny-mce",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "adds tinymce editor components to the webhandle environment",
+  "main": "initialize-webhandle-component.mjs",
   "scripts": {
     "test": "webhandle-run-dev ./test.mjs"
   },
